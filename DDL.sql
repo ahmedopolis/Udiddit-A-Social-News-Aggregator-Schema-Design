@@ -14,10 +14,9 @@ CREATE TABLE "users" (
     "login_timestamp" TIMESTAMP 
 );
 
--- Index for a list of all users who haven’t logged in in the last year. WORK IN PROGRESS
+-- Index for a list of all users who haven’t logged in in the last year.
 CREATE INDEX "find_users_not_logged_in_last_year" 
-    ON "users" ("username", YEAR("login_timestamp") != 
-        date_part('year', (SELECT current_timestamp)));
+    ON "users" ("username", "login_timestamp");
 
 -- Topics table
 CREATE TABLE "topics" (
