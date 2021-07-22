@@ -18,6 +18,16 @@ CREATE TABLE "users" (
 CREATE INDEX "find_users_not_logged_in_last_year" 
     ON "users" ("username", "login_timestamp");
 
+-- Indexes for a list all users who haven’t created any post.
+CREATE INDEX "find_user_ids_in_users" 
+    ON "users" ("id");
+CREATE INDEX "find_user_ids_in_posts"
+    ON "posts" ("user_id");
+
+-- Index for finding a user by their username.
+CREATE INDEX "find_users_by_their_username" 
+    ON "users" ("username");
+
 -- Topics table
 CREATE TABLE "topics" (
     "id" SERIAL PRIMARY KEY,
@@ -29,6 +39,16 @@ CREATE TABLE "topics" (
     CONSTRAINT "fk_user" 
         FOREIGN KEY ("user_id") REFERENCES "users" ("id")
 );
+
+-- Indexes to list all topics that don’t have any posts.
+CREATE INDEX "find_topic_ids_in_topics" 
+    ON "topics" ("id");
+CREATE INDEX "find_topic_ids_in_posts" 
+    ON "posts" ("topic_id");
+
+-- Index for finding a topic by its name.
+CREATE INDEX "find_topic_name_in_topics"
+    ON "topics" ("topic_name");
 
 -- Posts table
 CREATE TABLE "posts" (
@@ -54,6 +74,18 @@ CREATE TABLE "posts" (
     "post_timestamp" TIMESTAMP 
 );
 
+-- Index for a list of latest posts for a given topic.
+CREATE INDEX "find_posts_with_timestamp_and_topic"
+    ON "posts" ("URL", "text_content", "topic_id", "post_timestamp");
+
+-- Index for a list of latest posts for a given user.
+CREATE INDEX "find_posts_with_timestamp_and_user"
+    ON "posts" ("URL", "text_content", "user_id", "post_timestamp");
+
+-- Index to find posts with URL.
+CREATE INDEX "find_posts_with_URL"
+    ON "posts" ("URL");
+
 -- Comments table
 CREATE TABLE "comments" (
     "id" SERIAL PRIMARY KEY,
@@ -78,6 +110,19 @@ CREATE TABLE "comments" (
             REFERENCES "comments" ("id") ON DELETE CASCADE
 );
 
+-- Index for all the top-level comments for a given post.
+CREATE INDEX "find_top_level_comments_for_a_post"
+    ON "comments" ("comment", "post_id", "parent_comment_id")
+        WHERE "parent_comment_id" = NULL;
+
+-- Index for all the direct children of a parent comment.
+CREATE INDEX "find_all_the_direct_children_a_parent_comment"
+    ON "comments" ("comment", "parent_comment_id");
+
+-- Index to list the latest comments made by a given user.
+CREATE INDEX "find_latest_comments_by_user"
+    ON "comments" ("comment", "user_id");
+
 -- Votes on posts table
 CREATE TABLE "post_votes" (
     "id" SERIAL PRIMARY KEY,
@@ -93,5 +138,9 @@ CREATE TABLE "post_votes" (
         FOREIGN KEY ("post_id")
             REFERENCES "posts" ("id") ON DELETE CASCADE
 );
+
+-- Index to find score of post.
+CREATE INDEX "find_score_of_post"
+    ON "post_votes" ("post_vote", "post_id");
 
 
