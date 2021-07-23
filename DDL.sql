@@ -18,12 +18,6 @@ CREATE TABLE "users" (
 CREATE INDEX "find_users_not_logged_in_last_year" 
     ON "users" ("username", "login_timestamp");
 
--- Indexes for a list all users who haven’t created any post.
-CREATE INDEX "find_user_ids_in_users" 
-    ON "users" ("id");
-CREATE INDEX "find_user_ids_in_posts"
-    ON "posts" ("user_id");
-
 -- Index for finding a user by their username.
 CREATE INDEX "find_users_by_their_username" 
     ON "users" ("username");
@@ -35,9 +29,7 @@ CREATE TABLE "topics" (
     "description" VARCHAR(500),
     "user_id" INTEGER,
     CONSTRAINT "check_topics_length_not_zero"
-        CHECK (LENGTH(TRIM("topic_name")) > 0),
-    CONSTRAINT "fk_user" 
-        FOREIGN KEY ("user_id") REFERENCES "users" ("id")
+        CHECK (LENGTH(TRIM("topic_name")) > 0)
 );
 
 -- Indexes to list all topics that don’t have any posts.
@@ -74,6 +66,12 @@ CREATE TABLE "posts" (
     "post_timestamp" TIMESTAMP 
 );
 
+-- Indexes for a list all users who haven’t created any post.
+CREATE INDEX "find_user_ids_in_users" 
+    ON "users" ("id");
+CREATE INDEX "find_user_ids_in_posts"
+    ON "posts" ("user_id");
+    
 -- Index for a list of latest posts for a given topic.
 CREATE INDEX "find_posts_with_timestamp_and_topic"
     ON "posts" ("URL", "text_content", "topic_id", "post_timestamp");
@@ -127,12 +125,12 @@ CREATE INDEX "find_latest_comments_by_user"
 CREATE TABLE "post_votes" (
     "id" SERIAL PRIMARY KEY,
     "post_vote" INTEGER NOT NULL,
-    "user_id" INTEGER,
+    "voter_user_id" INTEGER,
     "post_id" INTEGER,
     CONSTRAINT "set_values_for_votes"
         CHECK ("post_vote" = 1 OR "post_vote" = -1),
     CONSTRAINT "fk_user" 
-        FOREIGN KEY ("user_id") 
+        FOREIGN KEY ("voter_user_id") 
             REFERENCES "users" ("id") ON DELETE SET NULL,
     CONSTRAINT "fk_post"
         FOREIGN KEY ("post_id")
@@ -142,5 +140,3 @@ CREATE TABLE "post_votes" (
 -- Index to find score of post.
 CREATE INDEX "find_score_of_post"
     ON "post_votes" ("post_vote", "post_id");
-
-
