@@ -1,5 +1,6 @@
 -- Enter Database
 psql
+\connect postgres;
 
 -- Drop tables if exists
 DROP TABLE IF EXISTS "users";
