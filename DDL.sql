@@ -1,3 +1,6 @@
+-- Enter Database
+psql
+
 -- Drop tables if exists
 DROP TABLE IF EXISTS "users";
 

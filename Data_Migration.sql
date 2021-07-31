@@ -1,3 +1,7 @@
+-- Enter Database
+psql
+\connect postgres;
+
 -- Insert all unique usernames from both initial tables.
 INSERT INTO "users"
             ("username")
